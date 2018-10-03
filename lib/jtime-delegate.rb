@@ -1,8 +1,10 @@
-# require 'forwardable'
+# jtime.rb would be like this if I choose "delegation" pattern instead of extending Time.
+
+require 'forwardable'
 
 class JTime
 
-  # extend Forwardable
+  extend Forwardable
 
   MEIJI_LIMIT = Time.gm(1912, 7, 29, 15, 43)
   TAISHO = '大正'
@@ -110,11 +112,11 @@ class JTime
     end
   end
 
-  def method_missing name, *args 
-    @time.send(name, *args)
-  end
+#
+# def method_missing name, *args 
+#   @time.send(name, *args)
+# end
 
-=begin
   %w(
     asctime ctime day mday dst? isdst eql? friday? getgm getutc getlocal gmt?
     utc? gmt_offset gmtoff utc_offset gmtime utc hash hour localtime min mon month
@@ -123,6 +125,5 @@ class JTime
   ).each { |name|
     def_delegator :@time, name
   }
-=end
 
 end
