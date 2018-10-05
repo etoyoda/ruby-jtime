@@ -1,4 +1,5 @@
 # jtime.rb would be like this if I choose "delegation" pattern instead of extending Time.
+# 継承ではなく移譲で書こうとするとこうなる。
 
 require 'forwardable'
 
@@ -28,6 +29,9 @@ class JTime
     else
       @era_name = ERA2019
       @era_year = @time.year - 2018
+    end
+    if utc_offset < 32400
+      raise "Japanese era not allowed for timezone west of 135E"
     end
     self
   end
@@ -89,6 +93,8 @@ class JTime
       gsub(/%Jg/){ era_year })
   end
 
+  # 算術演算子は引数型により扱いを変えるので単に移譲では済まない
+
   def - other
     case other
     when Time, JTime, Numeric then to_f - other.to_f
@@ -112,6 +118,9 @@ class JTime
     end
   end
 
+# メソッド数が多いと def_delegator の動作が遅くなることもある。
+# その場合には forwarder.rb, def_delegator() のかわりに次によっても一応動く
+# ものが作れるが、 response_to? に正しく答えなくなるなど弊害もある
 #
 # def method_missing name, *args 
 #   @time.send(name, *args)
