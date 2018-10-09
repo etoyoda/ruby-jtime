@@ -39,15 +39,15 @@ class JTime
       when Time then args.first
       when Integer, String then Time.new(*args)
       when NilClass then Time.now
-      else raise ArgumentError
+      else raise ArgumentError, "#{args.first.class} not accepted"
       end
     _gengo_
   end
 
   class << self
 
-    def at itime, usec = 0, unit = :microsecond
-      new(Time.at(itime, usec, unit))
+    def at itime, usec = 0
+      new(Time.at(itime, usec))
     end
 
     def now
@@ -98,7 +98,7 @@ class JTime
 
   def + other
     case other
-    when Numeric then JTime.new(to_f + other.to_f)
+    when Numeric then JTime.at(to_f + other.to_f)
     else raise ArgumentError
     end
   end
