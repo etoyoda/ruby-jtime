@@ -24,6 +24,9 @@ class JTime < Time
       @era_name = ERA2019
       @era_year = year - 2018
     end
+    if utc_offset < 32400
+      raise "Japanese era not allowed for timezone west of 135E"
+    end
     self
   end
 
