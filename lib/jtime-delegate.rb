@@ -97,7 +97,8 @@ class JTime
 
   def - other
     case other
-    when Time, JTime, Numeric then to_f - other.to_f
+    when Numeric then JTime.at(to_f - other.to_f)
+    when Time, JTime then to_f - other.to_f
     else raise ArgumentError
     end
   end
@@ -107,6 +108,10 @@ class JTime
     when Numeric then JTime.at(to_f + other.to_f)
     else raise ArgumentError
     end
+  end
+
+  def succ
+    self + 1
   end
 
   def <=> other
@@ -129,7 +134,7 @@ class JTime
   %w(
     asctime ctime day mday dst? isdst eql? friday? getgm getutc getlocal gmt?
     utc? gmt_offset gmtoff utc_offset gmtime utc hash hour localtime min mon month
-    monday? nsec tv_nsec round saturday? sec subsec succ sunday? thursday?
+    monday? nsec tv_nsec round saturday? sec subsec sunday? thursday?
     to_a to_f to_i tv_sec to_r to_s tuesday? tv_usec usec wday wednesday? yday year zone
   ).each { |name|
     def_delegator :@time, name

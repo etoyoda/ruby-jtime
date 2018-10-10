@@ -60,4 +60,19 @@ class JTime < Time
       gsub(/%Jg/){ era_year })
   end
 
+  def + other
+    JTime.new(super.to_f)
+  end
+
+  def - other
+    case other
+    when Numeric then JTime.new(super.to_f)
+    else super
+    end
+  end
+
+  def succ
+    JTime.new(super.to_f)
+  end
+
 end
