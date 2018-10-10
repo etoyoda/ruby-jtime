@@ -7,6 +7,10 @@ ENV['TZ'] = 'JST-9'
 j = JTime.new
 t = Time.new
 assert(-1..0, :===, j - t)
+assert(JTime, :==, (j + 1).class)
+assert(JTime, :==, (j - 1).class)
+assert(JTime, :==, j.succ.class)
+
 begin
   tj = t - j
 rescue TypeError
