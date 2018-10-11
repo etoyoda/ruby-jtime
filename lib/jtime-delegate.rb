@@ -39,13 +39,12 @@ class JTime
 
   private :_gengo_
 
-  def initialize *args
+  def initialize time = nil
     @era_name = @era_year = nil
-    @time = case args.first
-      when Time then args.first
-      when Integer, String then Time.new(*args)
-      when NilClass then Time.now
-      else raise ArgumentError, "#{args.first.class} not accepted"
+    @time = case time
+      when Time then time  # hidden feature for singleton methods
+      when NilClass then Time.now  # documented usage with zero argument
+      else raise TypeError
       end
   end
 
@@ -110,7 +109,7 @@ class JTime
 
   def - other
     case other
-    when Numeric then JTime.new(@time - other)
+    when Numeric then self.class.new(@time - other)
     when Time then @time - other
     when JTime then @time - other.to_time
     else raise TypeError
@@ -119,7 +118,7 @@ class JTime
 
   def + other
     case other
-    when Numeric then JTime.new(@time + other)
+    when Numeric then self.class.new(@time + other)
     when Time, JTime then raise TypeError, "#{self.class} + #{other.class}?"
     else raise TypeError
     end
@@ -139,15 +138,15 @@ class JTime
   end
 
   def getgm
-    JTime.new(@time.getgm)
+    self.class.new(@time.getgm)
   end
   alias :getutc :getgm
 
   def getlocal utc_offset = nil
     if utc_offset then
-      JTime.new(@time.getlocal(utc_offset))
+      self.class.new(@time.getlocal(utc_offset))
     else
-      JTime.new(@time.getlocal)
+      self.class.new(@time.getlocal)
     end
   end
 
@@ -167,7 +166,7 @@ class JTime
   end
 
   def round ndigits = 0
-    JTime.new(@time.round(ndigits))
+    self.class.new(@time.round(ndigits))
   end
 
 # メソッド数が多いと def_delegator の動作が遅くなることもある。

@@ -61,22 +61,22 @@ class JTime < Time
   end
 
   def + other
-    JTime.new(super.to_f)
+    self.class.new(super.to_f)
   end
 
   def - other
     case other
-    when Numeric then JTime.new(super.to_f)
+    when Numeric then self.class.new(super.to_f)
     else super
     end
   end
 
   def succ
-    JTime.at(super.to_f)
+    self.class.at(super)
   end
 
   def round ndigits = 0
-    JTime.at(super)
+    self.class.at(super)
   end
 
 end
