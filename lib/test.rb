@@ -7,16 +7,22 @@ ENV['TZ'] = 'JST-9'
 j = JTime.new
 t = Time.new
 assert(-1..0, :===, j - t)
-assert(JTime, :==, (j + 1).class)
-assert(JTime, :==, (j - 1).class)
-assert(JTime, :==, j.succ.class)
-
 begin
   tj = t - j
 rescue TypeError
   tj = 0
 end
 assert(0..1, :===, tj)
+
+z = JTime.local(2018, 10, 2, 12, 34, 56)
+assert(JTime, :==, (z + 1).class)
+assert(JTime, :==, (z - 1).class)
+assert(JTime, :==, z.succ.class)
+assert('Tue Oct  2 03:34:56 2018', :==, z.getgm.strftime('%c'))
+assert(JTime, :==, z.getgm.class)
+assert(JTime, :==, z.getutc.class)
+assert(JTime, :==, z.getlocal.class)
+assert(JTime, :==, z.getlocal(0).class)
 
 assert(JTime.local(1989, 1, 1).era_name, :==, JTime::SHOWA)
 assert(JTime.local(1989, 1, 7).era_name, :==, JTime::SHOWA)
