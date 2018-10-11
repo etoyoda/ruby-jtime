@@ -72,7 +72,11 @@ class JTime < Time
   end
 
   def succ
-    JTime.new(super.to_f)
+    JTime.at(super.to_f)
+  end
+
+  def round ndigits = 0
+    JTime.at(super)
   end
 
 end

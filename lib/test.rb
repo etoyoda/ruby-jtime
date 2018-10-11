@@ -24,6 +24,11 @@ assert(JTime, :==, z.getutc.class)
 assert(JTime, :==, z.getlocal.class)
 assert(JTime, :==, z.getlocal(0).class)
 
+assert(JTime, :==, JTime.local(1989, 1, 1).gmtime.class)
+assert(JTime, :==, JTime.local(1989, 1, 1).utc.class)
+assert('1970-01-01 09:00:03 +0900', :==, JTime.at(Math::PI).round.to_s)
+assert(JTime, :==, JTime.at(Math::PI).round.class)
+
 assert(JTime.local(1989, 1, 1).era_name, :==, JTime::SHOWA)
 assert(JTime.local(1989, 1, 7).era_name, :==, JTime::SHOWA)
 assert(JTime.local(1989, 1, 7, 23, 59, 59).era_name, :==, JTime::SHOWA)

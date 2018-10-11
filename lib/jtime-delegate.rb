@@ -17,6 +17,7 @@ class JTime
   ERA2019 = '〓〓'
 
   def _gengo_
+    return if @era_name
     if @time <= TAISHO_LIMIT
       @era_name = TAISHO
       @era_year = @time.year - 1911
@@ -39,18 +40,19 @@ class JTime
   private :_gengo_
 
   def initialize *args
+    @era_name = @era_year = nil
     @time = case args.first
       when Time then args.first
       when Integer, String then Time.new(*args)
       when NilClass then Time.now
       else raise ArgumentError, "#{args.first.class} not accepted"
       end
-    _gengo_
   end
 
   class << self
 
     def at itime, usec = 0
+      return new(itime) if Time === itime
       new(Time.at(itime, usec))
     end
 
@@ -76,7 +78,18 @@ class JTime
     @time
   end
 
+  def era_name
+    _gengo_
+    @era_name
+  end
+
+  def era_year
+    _gengo_
+    @era_year
+  end
+
   def era_year_name
+    _gengo_
     if @era_year == 1
       '元'
     else
@@ -97,16 +110,18 @@ class JTime
 
   def - other
     case other
-    when Numeric then JTime.at(to_f - other.to_f)
-    when Time, JTime then to_f - other.to_f
-    else raise ArgumentError
+    when Numeric then JTime.new(@time - other)
+    when Time then @time - other
+    when JTime then @time - other.to_time
+    else raise TypeError
     end
   end
 
   def + other
     case other
-    when Numeric then JTime.at(to_f + other.to_f)
-    else raise ArgumentError
+    when Numeric then JTime.new(@time + other)
+    when Time, JTime then raise TypeError, "#{self.class} + #{other.class}?"
+    else raise TypeError
     end
   end
 
@@ -123,6 +138,38 @@ class JTime
     end
   end
 
+  def getgm
+    JTime.new(@time.getgm)
+  end
+  alias :getutc :getgm
+
+  def getlocal utc_offset = nil
+    if utc_offset then
+      JTime.new(@time.getlocal(utc_offset))
+    else
+      JTime.new(@time.getlocal)
+    end
+  end
+
+  def gmtime
+    @time.gmtime
+    self
+  end
+  alias :utc :gmtime
+
+  def localtime utc_offset = nil
+    if utc_offset then
+      @time.localtime(utc_offset)
+    else
+      @time.localtime
+    end
+    self
+  end
+
+  def round ndigits = 0
+    JTime.new(@time.round(ndigits))
+  end
+
 # メソッド数が多いと def_delegator の動作が遅くなることもある。
 # その場合には forwarder.rb, def_delegator() のかわりに次によっても一応動く
 # ものが作れるが、 response_to? に正しく答えなくなるなど弊害もある
@@ -132,9 +179,9 @@ class JTime
 # end
 
   %w(
-    asctime ctime day mday dst? isdst eql? friday? getgm getutc getlocal gmt?
-    utc? gmt_offset gmtoff utc_offset gmtime utc hash hour localtime min mon month
-    monday? nsec tv_nsec round saturday? sec subsec sunday? thursday?
+    asctime ctime day mday dst? isdst eql? friday? gmt?
+    utc? gmt_offset gmtoff utc_offset hash hour min mon month
+    monday? nsec tv_nsec saturday? sec subsec sunday? thursday?
     to_a to_f to_i tv_sec to_r to_s tuesday? tv_usec usec wday wednesday? yday year zone
   ).each { |name|
     def_delegator :@time, name
